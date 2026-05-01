@@ -1,652 +1,408 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VoteWise – Election Process Education Assistant</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --ink: #0d0d0d;
-        --paper: #f5f0e8;
-        --saffron: #e85d04;
-        --green: #1b7a3e;
-        --blue: #1a3a6b;
-        --blue-mid: #2c5fa8;
-        --gold: #c9a84c;
-        --muted: #6b6560;
-        --card-bg: #fffef9;
-        --border: #ddd8cc;
-      }
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: "DM Sans", sans-serif;
-        background: var(--paper);
-        color: var(--ink);
-        min-height: 100vh;
-        overflow-x: hidden;
-      }
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        background-image:
-          radial-gradient(
-            circle at 15% 20%,
-            rgba(232, 93, 4, 0.06) 0%,
-            transparent 50%
-          ),
-          radial-gradient(
-            circle at 85% 80%,
-            rgba(27, 122, 62, 0.06) 0%,
-            transparent 50%
-          );
-        pointer-events: none;
-        z-index: 0;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoteWise – Election Process Education Assistant</title>
+  <meta name="description" content="Learn about India's democratic election process, voter registration, EVMs, NOTA and more." />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <!-- Google Translate API -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateInit" async></script>
+  <!-- Google Charts for analytics visualization -->
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
 
-      /* HEADER */
-      header {
-        position: relative;
-        z-index: 10;
-        background: var(--blue);
-        color: white;
-      }
-      .header-stripe {
-        height: 5px;
-        background: linear-gradient(
-          90deg,
-          var(--saffron) 33.3%,
-          white 33.3% 66.6%,
-          var(--green) 66.6%
-        );
-      }
-      .header-inner {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 20px 28px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-      .header-emblem {
-        width: 50px;
-        height: 50px;
-        background: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        flex-shrink: 0;
-        box-shadow: 0 0 0 3px var(--gold);
-      }
-      .header-text h1 {
-        font-family: "Playfair Display", serif;
-        font-size: clamp(1.3rem, 3vw, 1.9rem);
-        font-weight: 900;
-      }
-      .header-text p {
-        font-size: 0.78rem;
-        font-weight: 300;
-        opacity: 0.7;
-        margin-top: 2px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      .badge {
-        margin-left: auto;
-        background: rgba(255, 255, 255, 0.12);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 20px;
-        padding: 5px 12px;
-        font-size: 0.73rem;
-        font-weight: 500;
-        white-space: nowrap;
-      }
+  <style>
+    :root {
+      --ink: #0d0d0d;
+      --paper: #f5f0e8;
+      --saffron: #e85d04;
+      --green: #1b7a3e;
+      --blue: #1a3a6b;
+      --blue-mid: #2c5fa8;
+      --gold: #c9a84c;
+      --muted: #6b6560;
+      --card-bg: #fffef9;
+      --border: #ddd8cc;
+      --focus-ring: #2c5fa8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      /* LAYOUT */
-      .app-layout {
-        position: relative;
-        z-index: 1;
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 32px 20px 60px;
-        display: grid;
-        grid-template-columns: 280px 1fr;
-        gap: 24px;
-        align-items: start;
-      }
-      @media (max-width: 768px) {
-        .app-layout {
-          grid-template-columns: 1fr;
-          padding: 16px 12px 40px;
-        }
-        .sidebar {
-          display: none;
-        }
-      }
+    /* Skip link for accessibility */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 8px;
+      background: var(--blue);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 0 0 8px 8px;
+      text-decoration: none;
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.9rem;
+      z-index: 9999;
+      transition: top 0.2s;
+    }
+    .skip-link:focus { top: 0; }
 
-      /* SIDEBAR */
-      .sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-      }
-      .sidebar-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        overflow: hidden;
-        animation: fadeUp 0.5s ease both;
-      }
-      .sidebar-card:nth-child(2) {
-        animation-delay: 0.1s;
-      }
-      .sidebar-card:nth-child(3) {
-        animation-delay: 0.2s;
-      }
-      .sc-header {
-        padding: 10px 14px;
-        font-size: 0.68rem;
-        font-weight: 500;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        color: var(--muted);
-        border-bottom: 1px solid var(--border);
-      }
-      .topic-btn {
-        width: 100%;
-        text-align: left;
-        background: none;
-        border: none;
-        padding: 11px 14px;
-        cursor: pointer;
-        font-family: "DM Sans", sans-serif;
-        font-size: 0.85rem;
-        color: var(--ink);
-        border-bottom: 1px solid var(--border);
-        transition: all 0.18s;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .topic-btn:last-child {
-        border-bottom: none;
-      }
-      .topic-btn:hover {
-        background: rgba(26, 58, 107, 0.07);
-        color: var(--blue);
-        padding-left: 20px;
-      }
-      .t-icon {
-        width: 26px;
-        height: 26px;
-        background: rgba(26, 58, 107, 0.08);
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 13px;
-        flex-shrink: 0;
-      }
-      .fact-box {
-        padding: 14px;
-      }
-      .fact-label {
-        font-size: 0.68rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: var(--saffron);
-        font-weight: 500;
-        margin-bottom: 5px;
-      }
-      .fact-box p {
-        font-size: 0.83rem;
-        line-height: 1.55;
-      }
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(232,93,4,0.06) 0%, transparent 50%),
+        radial-gradient(circle at 85% 80%, rgba(27,122,62,0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-      /* CHAT */
-      .chat-area {
-        display: flex;
-        flex-direction: column;
-        animation: fadeUp 0.4s ease both;
-      }
-      .chat-window {
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 16px 16px 0 0;
-        min-height: 440px;
-        max-height: 500px;
-        overflow-y: auto;
-        padding: 22px;
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-        scroll-behavior: smooth;
-      }
-      .chat-window::-webkit-scrollbar {
-        width: 4px;
-      }
-      .chat-window::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      .chat-window::-webkit-scrollbar-thumb {
-        background: var(--border);
-        border-radius: 4px;
-      }
+    /* Focus styles for keyboard navigation */
+    :focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
 
-      .msg {
-        display: flex;
-        gap: 10px;
-        animation: msgIn 0.3s ease both;
-      }
-      .msg.user {
-        flex-direction: row-reverse;
-      }
-      @keyframes msgIn {
-        from {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .msg-avatar {
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 15px;
-        flex-shrink: 0;
-        margin-top: 2px;
-      }
-      .msg.assistant .msg-avatar {
-        background: var(--blue);
-        color: white;
-      }
-      .msg.user .msg-avatar {
-        background: var(--saffron);
-        color: white;
-      }
-      .msg-bubble {
-        max-width: 78%;
-        padding: 12px 15px;
-        border-radius: 14px;
-        font-size: 0.88rem;
-        line-height: 1.62;
-      }
-      .msg.assistant .msg-bubble {
-        background: white;
-        border: 1px solid var(--border);
-        border-top-left-radius: 4px;
-      }
-      .msg.user .msg-bubble {
-        background: var(--blue);
-        color: white;
-        border-top-right-radius: 4px;
-      }
-      .msg-bubble h4 {
-        font-family: "Playfair Display", serif;
-        font-size: 0.97rem;
-        margin-bottom: 6px;
-        color: var(--blue);
-      }
-      .msg-bubble ul {
-        padding-left: 16px;
-        margin-top: 5px;
-      }
-      .msg-bubble ul li {
-        margin-bottom: 3px;
-      }
-      .msg-bubble strong {
-        font-weight: 600;
-      }
-      .msg-bubble .link {
-        color: var(--blue-mid);
-        text-decoration: underline;
-        font-size: 0.82rem;
-      }
+    /* HEADER */
+    header {
+      position: relative;
+      z-index: 10;
+      background: var(--blue);
+      color: white;
+    }
+    .header-stripe {
+      height: 5px;
+      background: linear-gradient(90deg, var(--saffron) 33.3%, white 33.3% 66.6%, var(--green) 66.6%);
+      role: presentation;
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .header-emblem {
+      width: 50px; height: 50px;
+      background: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 3px var(--gold);
+      aria-hidden: true;
+    }
+    .header-text h1 { font-family: "Playfair Display", serif; font-size: clamp(1.3rem,3vw,1.9rem); font-weight: 900; }
+    .header-text p { font-size: 0.78rem; font-weight: 300; opacity: 0.7; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .header-controls { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .badge { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 5px 12px; font-size: 0.73rem; font-weight: 500; white-space: nowrap; }
+    #google_translate_element select {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    #google_translate_element select option { background: var(--blue); color: white; }
 
-      /* TYPING */
-      .typing-indicator {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-      .typing-dots {
-        display: flex;
-        gap: 5px;
-        padding: 12px 15px;
-        background: white;
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        border-top-left-radius: 4px;
-      }
-      .typing-dots span {
-        width: 7px;
-        height: 7px;
-        background: var(--blue-mid);
-        border-radius: 50%;
-        animation: bounce 1.2s infinite;
-      }
-      .typing-dots span:nth-child(2) {
-        animation-delay: 0.2s;
-      }
-      .typing-dots span:nth-child(3) {
-        animation-delay: 0.4s;
-      }
-      @keyframes bounce {
-        0%,
-        60%,
-        100% {
-          transform: translateY(0);
-          opacity: 0.4;
-        }
-        30% {
-          transform: translateY(-6px);
-          opacity: 1;
-        }
-      }
+    /* LAYOUT */
+    .app-layout {
+      position: relative; z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      .app-layout { grid-template-columns: 1fr; padding: 16px 12px 40px; }
+      .sidebar { display: none; }
+    }
 
-      /* CHIPS */
-      .quick-chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 7px;
-        padding: 12px 14px;
-        background: var(--paper);
-        border: 1px solid var(--border);
-        border-top: none;
-      }
-      .chip {
-        background: white;
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 5px 11px;
-        font-size: 0.76rem;
-        cursor: pointer;
-        font-family: "DM Sans", sans-serif;
-        color: var(--blue);
-        transition: all 0.18s;
-        font-weight: 500;
-      }
-      .chip:hover {
-        background: var(--blue);
-        color: white;
-        border-color: var(--blue);
-      }
+    /* SIDEBAR */
+    .sidebar { display: flex; flex-direction: column; gap: 14px; }
+    .sidebar-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+    .sidebar-card:nth-child(2) { animation-delay: 0.1s; }
+    .sidebar-card:nth-child(3) { animation-delay: 0.2s; }
+    .sc-header { padding: 10px 14px; font-size: 0.68rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .topic-btn {
+      width: 100%; text-align: left;
+      background: none; border: none;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-family: "DM Sans", sans-serif;
+      font-size: 0.85rem;
+      color: var(--ink);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.18s;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .topic-btn:last-child { border-bottom: none; }
+    .topic-btn:hover, .topic-btn:focus { background: rgba(26,58,107,0.07); color: var(--blue); padding-left: 20px; }
+    .t-icon { width: 26px; height: 26px; background: rgba(26,58,107,0.08); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+    .fact-box { padding: 14px; }
+    .fact-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--saffron); font-weight: 500; margin-bottom: 5px; }
+    .fact-box p { font-size: 0.83rem; line-height: 1.55; }
 
-      /* INPUT */
-      .input-bar {
-        background: white;
-        border: 1px solid var(--border);
-        border-top: none;
-        border-radius: 0 0 16px 16px;
-        padding: 14px;
-        display: flex;
-        gap: 10px;
-        align-items: flex-end;
-      }
-      .input-bar textarea {
-        flex: 1;
-        font-family: "DM Sans", sans-serif;
-        font-size: 0.88rem;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 9px 13px;
-        resize: none;
-        outline: none;
-        color: var(--ink);
-        background: var(--paper);
-        min-height: 42px;
-        max-height: 110px;
-        transition: border-color 0.2s;
-        line-height: 1.5;
-      }
-      .input-bar textarea:focus {
-        border-color: var(--blue-mid);
-      }
-      .send-btn {
-        width: 42px;
-        height: 42px;
-        background: var(--blue);
-        color: white;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 17px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s;
-        flex-shrink: 0;
-      }
-      .send-btn:hover {
-        background: var(--blue-mid);
-        transform: scale(1.05);
-      }
+    /* Analytics card */
+    .analytics-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; animation: fadeUp 0.5s 0.3s ease both; }
+    #voterTurnoutChart { width: 100%; height: 160px; }
 
-      /* STATS */
-      .stats-bar {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-top: 14px;
-      }
-      .stat-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 13px;
-        text-align: center;
-        animation: fadeUp 0.5s ease both;
-      }
-      .stat-card:nth-child(1) {
-        animation-delay: 0.3s;
-      }
-      .stat-card:nth-child(2) {
-        animation-delay: 0.4s;
-      }
-      .stat-card:nth-child(3) {
-        animation-delay: 0.5s;
-      }
-      .stat-num {
-        font-family: "Playfair Display", serif;
-        font-size: 1.45rem;
-        font-weight: 900;
-        color: var(--blue);
-      }
-      .stat-label {
-        font-size: 0.71rem;
-        color: var(--muted);
-        margin-top: 2px;
-        line-height: 1.3;
-      }
+    /* CHAT */
+    .chat-area { display: flex; flex-direction: column; animation: fadeUp 0.4s ease both; }
+    .chat-window {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px 16px 0 0;
+      min-height: 440px; max-height: 500px;
+      overflow-y: auto;
+      padding: 22px;
+      display: flex; flex-direction: column; gap: 18px;
+      scroll-behavior: smooth;
+    }
+    .chat-window::-webkit-scrollbar { width: 4px; }
+    .chat-window::-webkit-scrollbar-track { background: transparent; }
+    .chat-window::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-      @keyframes fadeUp {
-        from {
-          opacity: 0;
-          transform: translateY(16px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
+    .msg { display: flex; gap: 10px; animation: msgIn 0.3s ease both; }
+    .msg.user { flex-direction: row-reverse; }
+    @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .msg-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .msg.assistant .msg-avatar { background: var(--blue); color: white; }
+    .msg.user .msg-avatar { background: var(--saffron); color: white; }
+    .msg-bubble {
+      max-width: 78%;
+      padding: 12px 15px;
+      border-radius: 14px;
+      font-size: 0.88rem;
+      line-height: 1.62;
+    }
+    .msg.assistant .msg-bubble { background: white; border: 1px solid var(--border); border-top-left-radius: 4px; }
+    .msg.user .msg-bubble { background: var(--blue); color: white; border-top-right-radius: 4px; }
+    .msg-bubble h4 { font-family: "Playfair Display", serif; font-size: 0.97rem; margin-bottom: 6px; color: var(--blue); }
+    .msg.user .msg-bubble h4 { color: white; }
+    .msg-bubble ul { padding-left: 16px; margin-top: 5px; }
+    .msg-bubble ul li { margin-bottom: 3px; }
+    .msg-bubble strong { font-weight: 600; }
+    .msg-bubble .link { color: var(--blue-mid); text-decoration: underline; font-size: 0.82rem; }
 
-      .footer-note {
-        text-align: center;
-        font-size: 0.73rem;
-        color: var(--muted);
-        margin-top: 20px;
-        line-height: 1.6;
-      }
-      .footer-note a {
-        color: var(--blue);
-        text-decoration: none;
-      }
+    /* Typing */
+    .typing-indicator { display: flex; gap: 10px; align-items: center; }
+    .typing-dots { display: flex; gap: 5px; padding: 12px 15px; background: white; border: 1px solid var(--border); border-radius: 14px; border-top-left-radius: 4px; }
+    .typing-dots span { width: 7px; height: 7px; background: var(--blue-mid); border-radius: 50%; animation: bounce 1.2s infinite; }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,60%,100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-6px); opacity: 1; } }
 
-      /* QUIZ */
-      .quiz-card {
-        background: linear-gradient(
-          135deg,
-          rgba(26, 58, 107, 0.05),
-          rgba(27, 122, 62, 0.05)
-        );
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 13px;
-        margin-top: 8px;
-      }
-      .quiz-card p {
-        font-size: 0.87rem;
-        font-weight: 500;
-        margin-bottom: 9px;
-      }
-      .quiz-options {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-      .quiz-opt {
-        background: white;
-        border: 1px solid var(--border);
-        border-radius: 7px;
-        padding: 8px 12px;
-        font-size: 0.81rem;
-        cursor: pointer;
-        font-family: "DM Sans", sans-serif;
-        text-align: left;
-        transition: all 0.18s;
-      }
-      .quiz-opt:hover {
-        background: var(--blue);
-        color: white;
-        border-color: var(--blue);
-      }
-      .quiz-opt.correct {
-        background: var(--green);
-        color: white;
-        border-color: var(--green);
-      }
-      .quiz-opt.wrong {
-        background: #c0392b;
-        color: white;
-        border-color: #c0392b;
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <div class="header-stripe"></div>
-      <div class="header-inner">
-        <div class="header-emblem">🗳️</div>
-        <div class="header-text">
-          <h1>VoteWise</h1>
-          <p>Election Process Education Assistant · India</p>
-        </div>
-        <div class="badge">🇮🇳 Civic Tech</div>
+    /* Chips */
+    .quick-chips { display: flex; flex-wrap: wrap; gap: 7px; padding: 12px 14px; background: var(--paper); border: 1px solid var(--border); border-top: none; }
+    .chip {
+      background: white; border: 1px solid var(--border); border-radius: 20px;
+      padding: 5px 11px; font-size: 0.76rem; cursor: pointer;
+      font-family: "DM Sans", sans-serif; color: var(--blue);
+      transition: all 0.18s; font-weight: 500;
+    }
+    .chip:hover, .chip:focus { background: var(--blue); color: white; border-color: var(--blue); }
+
+    /* Input */
+    .input-bar {
+      background: white; border: 1px solid var(--border); border-top: none;
+      border-radius: 0 0 16px 16px;
+      padding: 14px; display: flex; gap: 10px; align-items: flex-end;
+    }
+    .input-bar textarea {
+      flex: 1; font-family: "DM Sans", sans-serif; font-size: 0.88rem;
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 9px 13px; resize: none; outline: none;
+      color: var(--ink); background: var(--paper);
+      min-height: 42px; max-height: 110px;
+      transition: border-color 0.2s; line-height: 1.5;
+    }
+    .input-bar textarea:focus { border-color: var(--blue-mid); }
+    .send-btn {
+      width: 42px; height: 42px;
+      background: var(--blue); color: white;
+      border: none; border-radius: 10px;
+      cursor: pointer; font-size: 17px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; flex-shrink: 0;
+    }
+    .send-btn:hover, .send-btn:focus { background: var(--blue-mid); transform: scale(1.05); }
+    .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* Stats */
+    .stats-bar { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 14px; }
+    .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 13px; text-align: center; animation: fadeUp 0.5s ease both; }
+    .stat-card:nth-child(1) { animation-delay: 0.3s; }
+    .stat-card:nth-child(2) { animation-delay: 0.4s; }
+    .stat-card:nth-child(3) { animation-delay: 0.5s; }
+    .stat-num { font-family: "Playfair Display", serif; font-size: 1.45rem; font-weight: 900; color: var(--blue); }
+    .stat-label { font-size: 0.71rem; color: var(--muted); margin-top: 2px; line-height: 1.3; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    .footer-note { text-align: center; font-size: 0.73rem; color: var(--muted); margin-top: 20px; line-height: 1.6; }
+    .footer-note a { color: var(--blue); text-decoration: none; }
+
+    /* Quiz */
+    .quiz-card { background: linear-gradient(135deg, rgba(26,58,107,0.05), rgba(27,122,62,0.05)); border: 1px solid var(--border); border-radius: 10px; padding: 13px; margin-top: 8px; }
+    .quiz-card p { font-size: 0.87rem; font-weight: 500; margin-bottom: 9px; }
+    .quiz-options { display: flex; flex-direction: column; gap: 6px; }
+    .quiz-opt {
+      background: white; border: 1px solid var(--border); border-radius: 7px;
+      padding: 8px 12px; font-size: 0.81rem; cursor: pointer;
+      font-family: "DM Sans", sans-serif; text-align: left;
+      transition: all 0.18s;
+    }
+    .quiz-opt:hover, .quiz-opt:focus { background: var(--blue); color: white; border-color: var(--blue); }
+    .quiz-opt.correct { background: var(--green); color: white; border-color: var(--green); }
+    .quiz-opt.wrong { background: #c0392b; color: white; border-color: #c0392b; }
+
+    /* Live Region for screen readers */
+    #liveRegion { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+    /* Test Results Panel */
+    #testPanel {
+      display: none;
+      position: fixed; bottom: 16px; right: 16px;
+      background: #1e1e1e; color: #d4d4d4;
+      border-radius: 10px; padding: 14px;
+      font-family: monospace; font-size: 0.75rem;
+      max-width: 340px; max-height: 320px;
+      overflow-y: auto; z-index: 9999;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    #testPanel h3 { color: #4ec9b0; margin-bottom: 8px; }
+    .t-pass { color: #4ec9b0; }
+    .t-fail { color: #f48771; }
+    #runTestsBtn {
+      position: fixed; bottom: 16px; right: 16px;
+      background: var(--blue); color: white;
+      border: none; border-radius: 8px;
+      padding: 8px 14px; font-size: 0.76rem;
+      cursor: pointer; font-family: "DM Sans", sans-serif;
+      z-index: 9998;
+    }
+    #runTestsBtn:hover { background: var(--blue-mid); }
+  </style>
+</head>
+<body>
+  <!-- Accessibility: Skip to main content -->
+  <a href="#chatWindow" class="skip-link">Skip to chat</a>
+
+  <!-- Live region for screen reader announcements -->
+  <div id="liveRegion" aria-live="polite" aria-atomic="true" role="status"></div>
+
+  <header role="banner">
+    <div class="header-stripe" role="presentation" aria-hidden="true"></div>
+    <div class="header-inner">
+      <div class="header-emblem" aria-hidden="true">🗳️</div>
+      <div class="header-text">
+        <h1>VoteWise</h1>
+        <p>Election Process Education Assistant · India</p>
       </div>
-    </header>
+      <div class="header-controls">
+        <!-- Google Translate integration -->
+        <div id="google_translate_element" aria-label="Language selector"></div>
+        <div class="badge" aria-label="India Civic Tech">🇮🇳 Civic Tech</div>
+      </div>
+    </div>
+  </header>
 
-    <div class="app-layout">
-      <aside class="sidebar">
+  <div class="app-layout">
+    <aside class="sidebar" aria-label="Topics and information">
+      <nav aria-label="Election topics">
         <div class="sidebar-card">
-          <div class="sc-header">📚 Explore Topics</div>
-          <button
-            class="topic-btn"
-            onclick="askTopic('how does voting work in india')"
-          >
-            <span class="t-icon">🗳️</span>How Voting Works
-          </button>
-          <button class="topic-btn" onclick="askTopic('voter eligibility')">
-            <span class="t-icon">✅</span>Voter Eligibility
-          </button>
-          <button
-            class="topic-btn"
-            onclick="askTopic('how to register as a voter')"
-          >
-            <span class="t-icon">📝</span>Voter Registration
-          </button>
-          <button
-            class="topic-btn"
-            onclick="askTopic('election commission of india')"
-          >
-            <span class="t-icon">🏛️</span>Election Commission
-          </button>
-          <button class="topic-btn" onclick="askTopic('what is nota')">
-            <span class="t-icon">🚫</span>NOTA Explained
-          </button>
-          <button class="topic-btn" onclick="askTopic('what is evm')">
-            <span class="t-icon">💻</span>EVMs & VVPATs
-          </button>
-          <button class="topic-btn" onclick="askTopic('model code of conduct')">
-            <span class="t-icon">📜</span>Model Code of Conduct
-          </button>
-          <button class="topic-btn" onclick="startQuiz()">
-            <span class="t-icon">🧠</span>Take a Quiz!
-          </button>
+          <div class="sc-header" id="topics-heading">📚 Explore Topics</div>
+          <ul role="list" style="list-style:none;" aria-labelledby="topics-heading">
+            <li><button class="topic-btn" onclick="askTopic('how does voting work in india')" aria-label="Learn how voting works"><span class="t-icon" aria-hidden="true">🗳️</span>How Voting Works</button></li>
+            <li><button class="topic-btn" onclick="askTopic('voter eligibility')" aria-label="Learn about voter eligibility"><span class="t-icon" aria-hidden="true">✅</span>Voter Eligibility</button></li>
+            <li><button class="topic-btn" onclick="askTopic('how to register as a voter')" aria-label="Learn how to register as a voter"><span class="t-icon" aria-hidden="true">📝</span>Voter Registration</button></li>
+            <li><button class="topic-btn" onclick="askTopic('election commission of india')" aria-label="Learn about Election Commission of India"><span class="t-icon" aria-hidden="true">🏛️</span>Election Commission</button></li>
+            <li><button class="topic-btn" onclick="askTopic('what is nota')" aria-label="Learn about NOTA"><span class="t-icon" aria-hidden="true">🚫</span>NOTA Explained</button></li>
+            <li><button class="topic-btn" onclick="askTopic('what is evm')" aria-label="Learn about EVMs and VVPATs"><span class="t-icon" aria-hidden="true">💻</span>EVMs &amp; VVPATs</button></li>
+            <li><button class="topic-btn" onclick="askTopic('model code of conduct')" aria-label="Learn about Model Code of Conduct"><span class="t-icon" aria-hidden="true">📜</span>Model Code of Conduct</button></li>
+            <li><button class="topic-btn" onclick="startQuiz()" aria-label="Take an election quiz"><span class="t-icon" aria-hidden="true">🧠</span>Take a Quiz!</button></li>
+          </ul>
         </div>
-        <div class="sidebar-card">
-          <div class="sc-header">💡 Did You Know?</div>
-          <div class="fact-box">
-            <div class="fact-label">Today's Fact</div>
-            <p id="daily-fact"></p>
-          </div>
+      </nav>
+      <div class="sidebar-card" role="complementary" aria-label="Did you know">
+        <div class="sc-header">💡 Did You Know?</div>
+        <div class="fact-box">
+          <div class="fact-label">Today's Fact</div>
+          <p id="daily-fact"></p>
         </div>
-      </aside>
+      </div>
+      <!-- Google Charts: Voter Turnout -->
+      <div class="analytics-card" role="complementary" aria-label="Voter turnout chart">
+        <div class="sc-header">📊 Voter Turnout Trends</div>
+        <div id="voterTurnoutChart" role="img" aria-label="Bar chart showing voter turnout percentage from 1984 to 2024"></div>
+      </div>
+    </aside>
 
+    <main id="main-content">
       <div class="chat-area">
-        <div class="chat-window" id="chatWindow"></div>
+        <div
+          class="chat-window"
+          id="chatWindow"
+          role="log"
+          aria-live="polite"
+          aria-label="Chat conversation"
+          aria-relevant="additions"
+          tabindex="0"
+        ></div>
 
-        <div class="quick-chips">
-          <span class="chip" onclick="askTopic('lok sabha election')"
-            >Lok Sabha</span
-          >
-          <span
-            class="chip"
-            onclick="askTopic('how is president of india elected')"
-            >Presidential Election</span
-          >
-          <span class="chip" onclick="askTopic('how to check voter list')"
-            >Check Voter List</span
-          >
-          <span class="chip" onclick="askTopic('documents needed to vote')"
-            >Voting Documents</span
-          >
-          <span class="chip" onclick="askTopic('fake news elections')"
-            >Fake News & Elections</span
-          >
+        <div class="quick-chips" role="group" aria-label="Quick topic buttons">
+          <button class="chip" onclick="askTopic('lok sabha election')" aria-label="Ask about Lok Sabha">Lok Sabha</button>
+          <button class="chip" onclick="askTopic('how is president of india elected')" aria-label="Ask about Presidential Election">Presidential Election</button>
+          <button class="chip" onclick="askTopic('how to check voter list')" aria-label="Ask how to check voter list">Check Voter List</button>
+          <button class="chip" onclick="askTopic('documents needed to vote')" aria-label="Ask about voting documents">Voting Documents</button>
+          <button class="chip" onclick="askTopic('fake news elections')" aria-label="Ask about fake news and elections">Fake News &amp; Elections</button>
         </div>
 
-        <div class="input-bar">
+        <div class="input-bar" role="form" aria-label="Ask a question">
+          <label for="userInput" class="sr-only" style="position:absolute;left:-9999px;">Type your question about elections</label>
           <textarea
             id="userInput"
             placeholder="Ask about elections, voting rights, registration..."
             rows="1"
             onkeydown="handleKey(event)"
             oninput="autoResize(this)"
+            aria-label="Your question"
+            aria-describedby="inputHint"
           ></textarea>
-          <button class="send-btn" onclick="sendMessage()">➤</button>
+          <span id="inputHint" style="display:none;">Press Enter to send, Shift+Enter for new line</span>
+          <button class="send-btn" onclick="sendMessage()" aria-label="Send message" id="sendBtn">➤</button>
         </div>
 
-        <div class="stats-bar">
+        <div class="stats-bar" role="region" aria-label="Election statistics">
           <div class="stat-card">
-            <div class="stat-num">96Cr+</div>
+            <div class="stat-num" aria-label="96 crore plus">96Cr+</div>
             <div class="stat-label">Registered Voters (2024)</div>
           </div>
           <div class="stat-card">
@@ -661,640 +417,680 @@
 
         <p class="footer-note">
           For official information, visit
-          <a href="https://eci.gov.in" target="_blank">eci.gov.in</a> &amp;
-          <a href="https://voters.eci.gov.in" target="_blank"
-            >voters.eci.gov.in</a
-          >
+          <a href="https://eci.gov.in" target="_blank" rel="noopener noreferrer" aria-label="Election Commission of India website (opens in new tab)">eci.gov.in</a> &amp;
+          <a href="https://voters.eci.gov.in" target="_blank" rel="noopener noreferrer" aria-label="Voters ECI website (opens in new tab)">voters.eci.gov.in</a>
           · Voter Helpline: <strong>1950</strong>
         </p>
       </div>
-    </div>
+    </main>
+  </div>
 
-    <script>
-      // ─── KNOWLEDGE BASE ───────────────────────────────────────────────────────────
-      const KB = [
-        {
-          keys: [
-            "how does voting work",
-            "voting process",
-            "how to vote",
-            "election process",
-            "how elections work",
-          ],
-          title: "How Voting Works in India 🗳️",
-          content: `India holds elections at multiple levels — Lok Sabha (national), Vidhan Sabha (state), Rajya Sabha, and local bodies. Here's the general process:`,
-          points: [
-            "The Election Commission of India (ECI) announces election dates",
-            "Candidates file nominations; scrutiny and campaigning follow",
-            "Voters go to their designated polling booth on election day",
-            "You press the button next to your candidate's name on the EVM",
-            "A VVPAT slip confirms your vote before being deposited",
-            "Votes are counted after polling ends; results declared",
-          ],
-          extra:
-            "Polling typically runs 7 AM – 6 PM. Your booth is printed on your Voter ID (EPIC card).",
-        },
-        {
-          keys: [
-            "voter eligibility",
-            "who can vote",
-            "eligible to vote",
-            "voting age",
-            "citizenship vote",
-          ],
-          title: "Voter Eligibility ✅",
-          content: "To vote in Indian elections, you must meet these criteria:",
-          points: [
-            "Be a citizen of India",
-            "Be at least 18 years of age on the qualifying date (January 1 of the election year)",
-            "Be ordinarily resident in the constituency where you register",
-            "Not be of unsound mind (as declared by a competent court)",
-            "Not be disqualified under any law relating to corrupt practices",
-          ],
-          extra:
-            "NRIs can also register to vote in their home constituency under Section 20A of the Representation of People Act.",
-        },
-        {
-          keys: [
-            "register",
-            "voter registration",
-            "form 6",
-            "voter id",
-            "epic",
-            "how to get voter id",
-            "enroll",
-            "enrollment",
-          ],
-          title: "Voter Registration 📝",
-          content: "Registering to vote is simple and free:",
-          points: [
-            "Visit voters.eci.gov.in or the Voter Helpline app",
-            "Fill Form 6 (for new registration) online or at your local ERO office",
-            "Submit documents: age proof, address proof, and passport photo",
-            "Your name gets added to the electoral roll",
-            "Download your e-EPIC (digital voter card) after approval",
-            "You can also register via the Voter Helpline: 1950",
-          ],
-          extra:
-            "You can check your registration status anytime at voters.eci.gov.in or by calling 1950.",
-        },
-        {
-          keys: [
-            "election commission",
-            "eci",
-            "chief election commissioner",
-            "role of eci",
-            "election commission of india",
-          ],
-          title: "Election Commission of India 🏛️",
-          content:
-            "The ECI is an autonomous constitutional body that oversees all elections in India:",
-          points: [
-            "Established on January 25, 1950 (National Voters' Day)",
-            "Headed by the Chief Election Commissioner (CEC)",
-            "Announces election schedules and enforces the Model Code of Conduct",
-            "Supervises voter registration across the country",
-            "Can transfer or suspend government officials during elections",
-            "Decides on election disputes and candidate disqualifications",
-          ],
-          extra:
-            "Article 324 of the Constitution grants the ECI superintendence, direction and control over elections.",
-        },
-        {
-          keys: ["nota", "none of the above", "reject all candidates"],
-          title: "NOTA – None Of The Above 🚫",
-          content:
-            "NOTA lets voters formally reject all candidates on the ballot:",
-          points: [
-            "Introduced in India following a 2013 Supreme Court order",
-            "Appears as the last option on the EVM",
-            "Symbol: a ballot paper with a cross (✗)",
-            "If NOTA gets the most votes, the candidate with the next highest votes wins",
-            "NOTA is a way to express dissatisfaction without staying home",
-            "Available in all general, state, and by-elections",
-          ],
-          extra:
-            "NOTA votes are counted and published but do not affect the final result — the highest vote-getter among candidates wins.",
-        },
-        {
-          keys: [
-            "evm",
-            "electronic voting machine",
-            "vvpat",
-            "paper trail",
-            "how evm works",
-            "voting machine",
-          ],
-          title: "EVMs & VVPATs 💻",
-          content:
-            "India uses Electronic Voting Machines since 1982, with nationwide adoption in 2004:",
-          points: [
-            "An EVM has two units: Ballot Unit (voter side) + Control Unit (presiding officer side)",
-            "Voter presses the button next to their candidate's name and symbol",
-            "VVPAT (Voter Verifiable Paper Audit Trail) shows a printed slip for 7 seconds confirming your vote",
-            "EVMs are standalone — not connected to internet, tamper-resistant",
-            "Each EVM stores up to 2,000 votes",
-            "EVMs are tested and sealed before elections in front of candidates/agents",
-          ],
-          extra:
-            "EVMs are manufactured only by BEL (Bharat Electronics Limited) and ECIL (Electronics Corporation of India).",
-        },
-        {
-          keys: [
-            "model code of conduct",
-            "mcc",
-            "election code",
-            "campaign rules",
-          ],
-          title: "Model Code of Conduct 📜",
-          content:
-            "The MCC is a set of guidelines for political parties and candidates during elections:",
-          points: [
-            "Comes into force immediately when election dates are announced",
-            "Prohibits use of government resources for campaigning",
-            "Bans communal or divisive speeches",
-            "Restricts announcement of new government schemes (freebies) during election period",
-            "Governs conduct at rallies, meetings, and processions",
-            "Violation can lead to disqualification or legal action",
-          ],
-          extra:
-            "The MCC is not a statutory document but is enforced by the ECI through its constitutional powers.",
-        },
-        {
-          keys: [
-            "lok sabha",
-            "parliament election",
-            "mp",
-            "member of parliament",
-            "general election",
-          ],
-          title: "Lok Sabha Elections 🏛️",
-          content: "Lok Sabha is the lower house of India's Parliament:",
-          points: [
-            "543 elected constituencies across India (+ 2 Anglo-Indian nominated, now discontinued)",
-            "Elections held every 5 years, or sooner if Parliament is dissolved",
-            "Voters in each constituency elect one Member of Parliament (MP)",
-            "The party or alliance with majority (272+ seats) forms the government",
-            "The leader of the majority party becomes the Prime Minister",
-            "2024 General Election: ~97 crore eligible voters participated",
-          ],
-          extra:
-            "India uses First Past The Post (FPTP) system — the candidate with most votes in a constituency wins.",
-        },
-        {
-          keys: [
-            "president election",
-            "how is president elected",
-            "presidential election",
-            "presidential vote",
-          ],
-          title: "Presidential Election in India 🎖️",
-          content:
-            "The President of India is not directly elected by citizens:",
-          points: [
-            "Elected by an Electoral College — not ordinary voters",
-            "Electoral College = elected MPs (Lok Sabha + Rajya Sabha) + elected MLAs of all state assemblies",
-            "Each vote is weighted based on population (state) and seats (Parliament)",
-            "Single Transferable Vote with proportional representation system is used",
-            "Term is 5 years; can be re-elected once",
-            "Current President: Smt. Droupadi Murmu (since July 2022)",
-          ],
-          extra:
-            "The Vice President is elected separately by both Houses of Parliament (no state MLAs involved).",
-        },
-        {
-          keys: [
-            "check voter list",
-            "name in voter list",
-            "electoral roll",
-            "find name voter",
-            "voter search",
-          ],
-          title: "How to Check Your Name in Voter List 🔍",
-          content: "You can check if you're registered in a few easy ways:",
-          points: [
-            'Go to voters.eci.gov.in → "Search Your Name in Electoral Roll"',
-            "Enter your name, date of birth, and state",
-            "Or enter your EPIC (Voter ID) number directly",
-            "Use the Voter Helpline App (available on Android & iOS)",
-            "Call 1950 — the national Voter Helpline",
-            "Visit your local Electoral Registration Office (ERO)",
-          ],
-          extra:
-            "If your name is missing, file Form 6 to register. If details are wrong, file Form 8 for correction.",
-        },
-        {
-          keys: [
-            "documents to vote",
-            "what to carry polling booth",
-            "id proof voting",
-            "documents needed vote",
-          ],
-          title: "Documents You Need to Vote 📋",
-          content:
-            "At the polling booth, carry ANY ONE of these identity documents:",
-          points: [
-            "🪪 Voter ID Card (EPIC) — the primary document",
-            "🛂 Passport",
-            "🚗 Driving Licence",
-            "🏦 Aadhaar Card",
-            "📸 MNREGA Job Card with photo",
-            "🏢 Service Identity Cards issued by Central/State Govt",
-          ],
-          extra:
-            "Even without Voter ID, you can vote using any of the above 11 alternative documents approved by the ECI.",
-        },
-        {
-          keys: [
-            "fake news",
-            "misinformation",
-            "disinformation",
-            "rumor elections",
-            "social media elections",
-            "fact check",
-          ],
-          title: "Fake News & Elections 📰",
-          content:
-            "Misinformation spreads rapidly during elections. Here's how to stay informed:",
-          points: [
-            "Verify news using fact-checkers: factchecker.in, boomlive.in, altnews.in",
-            "Check if the source is an official government or ECI website",
-            "Be cautious of viral WhatsApp messages — always cross-check",
-            "Report fake news to the ECI via cVIGIL app or 1950",
-            "The Representation of People Act prohibits election-related misinformation",
-            'ECI runs "Know Your Candidate" portal for verified candidate info',
-          ],
-          extra:
-            "You can report election violations including fake news via the cVIGIL app — ECI responds within 100 minutes!",
-        },
-        {
-          keys: [
-            "rajya sabha",
-            "upper house",
-            "rajya sabha election",
-            "council of states",
-          ],
-          title: "Rajya Sabha Elections 🏛️",
-          content:
-            "Rajya Sabha is the upper house (Council of States) of Parliament:",
-          points: [
-            "245 seats total (233 elected + 12 nominated by President)",
-            "Members are NOT directly elected by citizens",
-            "Elected by MLAs (state legislative assembly members) using Single Transferable Vote",
-            "Members serve 6-year terms; 1/3rd retire every 2 years",
-            "Rajya Sabha cannot be dissolved — it's a permanent house",
-            "Rajya Sabha has special powers over state list bills",
-          ],
-          extra:
-            "To be a Rajya Sabha member, you must be 30 years or older (vs 25 for Lok Sabha).",
-        },
-        {
-          keys: [
-            "state election",
-            "vidhan sabha",
-            "assembly election",
-            "mla",
-            "legislative assembly",
-          ],
-          title: "State Assembly (Vidhan Sabha) Elections 🏢",
-          content: "State Assembly elections determine the state government:",
-          points: [
-            "Each state has its own legislative assembly (Vidhan Sabha)",
-            "Citizens elect Members of Legislative Assembly (MLAs)",
-            "Party with majority forms state government; leader becomes Chief Minister",
-            "Elections every 5 years (unless assembly is dissolved earlier)",
-            "Conducted by ECI, same rules as general elections apply",
-            "Some states also have an upper house: Vidhan Parishad",
-          ],
-          extra:
-            "As of 2024, states like Uttar Pradesh (403 seats), Maharashtra (288), and West Bengal (294) have the largest assemblies.",
-        },
-        {
-          keys: [
-            "voting rights",
-            "right to vote",
-            "franchise",
-            "suffrage",
-            "constitutional right",
-          ],
-          title: "Your Right to Vote 🇮🇳",
-          content: "Voting is both a right and a civic duty in India:",
-          points: [
-            "Article 326 of the Constitution guarantees adult suffrage to all citizens",
-            "No one can be denied the right to vote based on religion, race, caste, sex, or place of birth",
-            "Employees are entitled to paid leave to vote (in most states)",
-            "Secret ballot ensures your vote is completely private",
-            "Impersonation at polls is a criminal offence",
-            "Bribing voters is illegal — report to ECI via 1950 or cVIGIL",
-          ],
-          extra:
-            '"Every vote matters" — in 2009, a candidate in Rajasthan won by just 1 vote!',
-        },
-      ];
+  <!-- Run Tests Button -->
+  <button id="runTestsBtn" onclick="runTests()" aria-label="Run application tests">🧪 Run Tests</button>
+  <div id="testPanel" role="dialog" aria-label="Test Results" aria-modal="false">
+    <h3>🧪 Test Results</h3>
+    <div id="testOutput"></div>
+  </div>
 
-      const quizQuestions = [
-        {
-          q: "What is the minimum voting age in India?",
-          options: ["16 years", "18 years", "21 years", "25 years"],
-          correct: 1,
-          explanation:
-            "The 61st Constitutional Amendment (1988) lowered the voting age from 21 to 18.",
-        },
-        {
-          q: "Which body conducts elections in India?",
-          options: [
-            "Supreme Court",
-            "Parliament",
-            "Election Commission of India",
-            "Cabinet",
-          ],
-          correct: 2,
-          explanation:
-            "The ECI, established in 1950, is an autonomous constitutional body administering all elections.",
-        },
-        {
-          q: "What does NOTA stand for?",
-          options: [
-            "No One To Acknowledge",
-            "None Of The Above",
-            "Not On The Agenda",
-            "National Option To Abstain",
-          ],
-          correct: 1,
-          explanation:
-            "NOTA was introduced in 2013 following a Supreme Court directive.",
-        },
-        {
-          q: "How many Lok Sabha constituencies are there?",
-          options: ["343", "443", "543", "643"],
-          correct: 2,
-          explanation: "India's Lok Sabha has 543 elected constituencies.",
-        },
-        {
-          q: "What is the Voter Helpline number?",
-          options: ["1800", "1950", "100", "1077"],
-          correct: 1,
-          explanation:
-            "1950 is the national voter helpline operated by the ECI.",
-        },
-        {
-          q: "When did India first use EVMs nationwide?",
-          options: ["1989", "1996", "2004", "2009"],
-          correct: 2,
-          explanation:
-            "EVMs were used in all constituencies for the first time in the 2004 general elections.",
-        },
-        {
-          q: "What is the Form 6 used for?",
-          options: [
-            "Candidate nomination",
-            "New voter registration",
-            "Deleting voter name",
-            "Postal ballot",
-          ],
-          correct: 1,
-          explanation:
-            "Form 6 is filled by a person who wants to register as a new voter.",
-        },
-        {
-          q: "Which article guarantees the right to vote in India?",
-          options: ["Article 19", "Article 21", "Article 326", "Article 324"],
-          correct: 2,
-          explanation:
-            "Article 326 provides for elections to Lok Sabha and Vidhan Sabhas on the basis of adult suffrage.",
-        },
-      ];
+  <script>
+    'use strict';
 
-      const facts = [
-        "India conducts the world's largest democratic elections, with over 96 crore registered voters as of 2024.",
-        "The first general election in India (1951–52) took nearly 4 months to complete.",
-        "EVMs were first used nationwide in India in the 2004 general elections.",
-        "India introduced the NOTA option in 2013 following a Supreme Court directive.",
-        "The Election Commission of India was established on January 25, 1950 — now celebrated as National Voters' Day.",
-        "In 2009, a candidate in Rajasthan won a seat by just 1 vote — every vote truly matters!",
-        "India has the world's youngest electorate — millions of 18-year-olds register to vote each year.",
-        "The Model Code of Conduct comes into force the moment election dates are announced by the ECI.",
-      ];
+    // ─── CONSTANTS ──────────────────────────────────────────────────────────────
+    const VOTER_HELPLINE = '1950';
+    const ECI_URL = 'https://eci.gov.in';
+    const VOTERS_URL = 'https://voters.eci.gov.in';
 
-      // ─── STATE ────────────────────────────────────────────────────────────────────
-      let quizIdx = 0,
-        quizScore = 0,
-        inQuiz = false;
+    // ─── KNOWLEDGE BASE ─────────────────────────────────────────────────────────
+    const KB = [
+      {
+        id: 'voting-process',
+        keys: ['how does voting work','voting process','how to vote','election process','how elections work'],
+        title: 'How Voting Works in India 🗳️',
+        content: 'India holds elections at multiple levels — Lok Sabha (national), Vidhan Sabha (state), Rajya Sabha, and local bodies. Here\'s the general process:',
+        points: [
+          'The Election Commission of India (ECI) announces election dates',
+          'Candidates file nominations; scrutiny and campaigning follow',
+          'Voters go to their designated polling booth on election day',
+          'You press the button next to your candidate\'s name on the EVM',
+          'A VVPAT slip confirms your vote before being deposited',
+          'Votes are counted after polling ends; results declared',
+        ],
+        extra: 'Polling typically runs 7 AM – 6 PM. Your booth is printed on your Voter ID (EPIC card).',
+      },
+      {
+        id: 'eligibility',
+        keys: ['voter eligibility','who can vote','eligible to vote','voting age','citizenship vote'],
+        title: 'Voter Eligibility ✅',
+        content: 'To vote in Indian elections, you must meet these criteria:',
+        points: [
+          'Be a citizen of India',
+          'Be at least 18 years of age on the qualifying date (January 1 of the election year)',
+          'Be ordinarily resident in the constituency where you register',
+          'Not be of unsound mind (as declared by a competent court)',
+          'Not be disqualified under any law relating to corrupt practices',
+        ],
+        extra: 'NRIs can also register to vote in their home constituency under Section 20A of the Representation of People Act.',
+      },
+      {
+        id: 'registration',
+        keys: ['register','voter registration','form 6','voter id','epic','how to get voter id','enroll','enrollment'],
+        title: 'Voter Registration 📝',
+        content: 'Registering to vote is simple and free:',
+        points: [
+          'Visit voters.eci.gov.in or the Voter Helpline app',
+          'Fill Form 6 (for new registration) online or at your local ERO office',
+          'Submit documents: age proof, address proof, and passport photo',
+          'Your name gets added to the electoral roll',
+          'Download your e-EPIC (digital voter card) after approval',
+          'You can also register via the Voter Helpline: 1950',
+        ],
+        extra: 'You can check your registration status anytime at voters.eci.gov.in or by calling 1950.',
+      },
+      {
+        id: 'eci',
+        keys: ['election commission','eci','chief election commissioner','role of eci','election commission of india'],
+        title: 'Election Commission of India 🏛️',
+        content: 'The ECI is an autonomous constitutional body that oversees all elections in India:',
+        points: [
+          'Established on January 25, 1950 (National Voters\' Day)',
+          'Headed by the Chief Election Commissioner (CEC)',
+          'Announces election schedules and enforces the Model Code of Conduct',
+          'Supervises voter registration across the country',
+          'Can transfer or suspend government officials during elections',
+          'Decides on election disputes and candidate disqualifications',
+        ],
+        extra: 'Article 324 of the Constitution grants the ECI superintendence, direction and control over elections.',
+      },
+      {
+        id: 'nota',
+        keys: ['nota','none of the above','reject all candidates'],
+        title: 'NOTA – None Of The Above 🚫',
+        content: 'NOTA lets voters formally reject all candidates on the ballot:',
+        points: [
+          'Introduced in India following a 2013 Supreme Court order',
+          'Appears as the last option on the EVM',
+          'Symbol: a ballot paper with a cross (✗)',
+          'If NOTA gets the most votes, the candidate with the next highest votes wins',
+          'NOTA is a way to express dissatisfaction without staying home',
+          'Available in all general, state, and by-elections',
+        ],
+        extra: 'NOTA votes are counted and published but do not affect the final result — the highest vote-getter among candidates wins.',
+      },
+      {
+        id: 'evm',
+        keys: ['evm','electronic voting machine','vvpat','paper trail','how evm works','voting machine'],
+        title: 'EVMs & VVPATs 💻',
+        content: 'India uses Electronic Voting Machines since 1982, with nationwide adoption in 2004:',
+        points: [
+          'An EVM has two units: Ballot Unit (voter side) + Control Unit (presiding officer side)',
+          'Voter presses the button next to their candidate\'s name and symbol',
+          'VVPAT (Voter Verifiable Paper Audit Trail) shows a printed slip for 7 seconds confirming your vote',
+          'EVMs are standalone — not connected to internet, tamper-resistant',
+          'Each EVM stores up to 2,000 votes',
+          'EVMs are tested and sealed before elections in front of candidates/agents',
+        ],
+        extra: 'EVMs are manufactured only by BEL (Bharat Electronics Limited) and ECIL (Electronics Corporation of India).',
+      },
+      {
+        id: 'mcc',
+        keys: ['model code of conduct','mcc','election code','campaign rules'],
+        title: 'Model Code of Conduct 📜',
+        content: 'The MCC is a set of guidelines for political parties and candidates during elections:',
+        points: [
+          'Comes into force immediately when election dates are announced',
+          'Prohibits use of government resources for campaigning',
+          'Bans communal or divisive speeches',
+          'Restricts announcement of new government schemes (freebies) during election period',
+          'Governs conduct at rallies, meetings, and processions',
+          'Violation can lead to disqualification or legal action',
+        ],
+        extra: 'The MCC is not a statutory document but is enforced by the ECI through its constitutional powers.',
+      },
+      {
+        id: 'lok-sabha',
+        keys: ['lok sabha','parliament election','mp','member of parliament','general election'],
+        title: 'Lok Sabha Elections 🏛️',
+        content: 'Lok Sabha is the lower house of India\'s Parliament:',
+        points: [
+          '543 elected constituencies across India',
+          'Elections held every 5 years, or sooner if Parliament is dissolved',
+          'Voters in each constituency elect one Member of Parliament (MP)',
+          'The party or alliance with majority (272+ seats) forms the government',
+          'The leader of the majority party becomes the Prime Minister',
+          '2024 General Election: ~97 crore eligible voters participated',
+        ],
+        extra: 'India uses First Past The Post (FPTP) system — the candidate with most votes in a constituency wins.',
+      },
+      {
+        id: 'president',
+        keys: ['president election','how is president elected','presidential election','presidential vote'],
+        title: 'Presidential Election in India 🎖️',
+        content: 'The President of India is not directly elected by citizens:',
+        points: [
+          'Elected by an Electoral College — not ordinary voters',
+          'Electoral College = elected MPs (Lok Sabha + Rajya Sabha) + elected MLAs of all state assemblies',
+          'Each vote is weighted based on population (state) and seats (Parliament)',
+          'Single Transferable Vote with proportional representation system is used',
+          'Term is 5 years; can be re-elected once',
+          'Current President: Smt. Droupadi Murmu (since July 2022)',
+        ],
+        extra: 'The Vice President is elected separately by both Houses of Parliament (no state MLAs involved).',
+      },
+      {
+        id: 'voter-list',
+        keys: ['check voter list','name in voter list','electoral roll','find name voter','voter search'],
+        title: 'How to Check Your Name in Voter List 🔍',
+        content: 'You can check if you\'re registered in a few easy ways:',
+        points: [
+          'Go to voters.eci.gov.in → "Search Your Name in Electoral Roll"',
+          'Enter your name, date of birth, and state',
+          'Or enter your EPIC (Voter ID) number directly',
+          'Use the Voter Helpline App (available on Android & iOS)',
+          'Call 1950 — the national Voter Helpline',
+          'Visit your local Electoral Registration Office (ERO)',
+        ],
+        extra: 'If your name is missing, file Form 6 to register. If details are wrong, file Form 8 for correction.',
+      },
+      {
+        id: 'documents',
+        keys: ['documents to vote','what to carry polling booth','id proof voting','documents needed vote'],
+        title: 'Documents You Need to Vote 📋',
+        content: 'At the polling booth, carry ANY ONE of these identity documents:',
+        points: [
+          '🪪 Voter ID Card (EPIC) — the primary document',
+          '🛂 Passport',
+          '🚗 Driving Licence',
+          '🏦 Aadhaar Card',
+          '📸 MNREGA Job Card with photo',
+          '🏢 Service Identity Cards issued by Central/State Govt',
+        ],
+        extra: 'Even without Voter ID, you can vote using any of the above 11 alternative documents approved by the ECI.',
+      },
+      {
+        id: 'fake-news',
+        keys: ['fake news','misinformation','disinformation','rumor elections','social media elections','fact check'],
+        title: 'Fake News & Elections 📰',
+        content: 'Misinformation spreads rapidly during elections. Here\'s how to stay informed:',
+        points: [
+          'Verify news using fact-checkers: factchecker.in, boomlive.in, altnews.in',
+          'Check if the source is an official government or ECI website',
+          'Be cautious of viral WhatsApp messages — always cross-check',
+          'Report fake news to the ECI via cVIGIL app or 1950',
+          'The Representation of People Act prohibits election-related misinformation',
+          'ECI runs "Know Your Candidate" portal for verified candidate info',
+        ],
+        extra: 'You can report election violations including fake news via the cVIGIL app — ECI responds within 100 minutes!',
+      },
+      {
+        id: 'rajya-sabha',
+        keys: ['rajya sabha','upper house','rajya sabha election','council of states'],
+        title: 'Rajya Sabha Elections 🏛️',
+        content: 'Rajya Sabha is the upper house (Council of States) of Parliament:',
+        points: [
+          '245 seats total (233 elected + 12 nominated by President)',
+          'Members are NOT directly elected by citizens',
+          'Elected by MLAs (state legislative assembly members) using Single Transferable Vote',
+          'Members serve 6-year terms; 1/3rd retire every 2 years',
+          'Rajya Sabha cannot be dissolved — it\'s a permanent house',
+          'Rajya Sabha has special powers over state list bills',
+        ],
+        extra: 'To be a Rajya Sabha member, you must be 30 years or older (vs 25 for Lok Sabha).',
+      },
+      {
+        id: 'vidhan-sabha',
+        keys: ['state election','vidhan sabha','assembly election','mla','legislative assembly'],
+        title: 'State Assembly (Vidhan Sabha) Elections 🏢',
+        content: 'State Assembly elections determine the state government:',
+        points: [
+          'Each state has its own legislative assembly (Vidhan Sabha)',
+          'Citizens elect Members of Legislative Assembly (MLAs)',
+          'Party with majority forms state government; leader becomes Chief Minister',
+          'Elections every 5 years (unless assembly is dissolved earlier)',
+          'Conducted by ECI, same rules as general elections apply',
+          'Some states also have an upper house: Vidhan Parishad',
+        ],
+        extra: 'As of 2024, states like Uttar Pradesh (403 seats), Maharashtra (288), and West Bengal (294) have the largest assemblies.',
+      },
+      {
+        id: 'voting-rights',
+        keys: ['voting rights','right to vote','franchise','suffrage','constitutional right'],
+        title: 'Your Right to Vote 🇮🇳',
+        content: 'Voting is both a right and a civic duty in India:',
+        points: [
+          'Article 326 of the Constitution guarantees adult suffrage to all citizens',
+          'No one can be denied the right to vote based on religion, race, caste, sex, or place of birth',
+          'Employees are entitled to paid leave to vote (in most states)',
+          'Secret ballot ensures your vote is completely private',
+          'Impersonation at polls is a criminal offence',
+          'Bribing voters is illegal — report to ECI via 1950 or cVIGIL',
+        ],
+        extra: '"Every vote matters" — in 2009, a candidate in Rajasthan won by just 1 vote!',
+      },
+    ];
 
-      // ─── INIT ─────────────────────────────────────────────────────────────────────
-      document.getElementById("daily-fact").textContent =
-        facts[Math.floor(Math.random() * facts.length)];
-      appendWelcome();
+    const QUIZ_QUESTIONS = [
+      { q:'What is the minimum voting age in India?', options:['16 years','18 years','21 years','25 years'], correct:1, explanation:'The 61st Constitutional Amendment (1988) lowered the voting age from 21 to 18.' },
+      { q:'Which body conducts elections in India?', options:['Supreme Court','Parliament','Election Commission of India','Cabinet'], correct:2, explanation:'The ECI, established in 1950, is an autonomous constitutional body administering all elections.' },
+      { q:'What does NOTA stand for?', options:['No One To Acknowledge','None Of The Above','Not On The Agenda','National Option To Abstain'], correct:1, explanation:'NOTA was introduced in 2013 following a Supreme Court directive.' },
+      { q:'How many Lok Sabha constituencies are there?', options:['343','443','543','643'], correct:2, explanation:'India\'s Lok Sabha has 543 elected constituencies.' },
+      { q:'What is the Voter Helpline number?', options:['1800','1950','100','1077'], correct:1, explanation:'1950 is the national voter helpline operated by the ECI.' },
+      { q:'When did India first use EVMs nationwide?', options:['1989','1996','2004','2009'], correct:2, explanation:'EVMs were used in all constituencies for the first time in the 2004 general elections.' },
+      { q:'What is the Form 6 used for?', options:['Candidate nomination','New voter registration','Deleting voter name','Postal ballot'], correct:1, explanation:'Form 6 is filled by a person who wants to register as a new voter.' },
+      { q:'Which article guarantees the right to vote in India?', options:['Article 19','Article 21','Article 326','Article 324'], correct:2, explanation:'Article 326 provides for elections to Lok Sabha and Vidhan Sabhas on the basis of adult suffrage.' },
+    ];
 
-      function appendWelcome() {
-        const html = `
-    <h4>Namaste! I'm VoteWise 👋</h4>
-    <p>I'm your guide to understanding India's democratic election process. Ask me anything about:</p>
-    <ul>
-      <li>How elections are conducted</li>
-      <li>Voter registration &amp; eligibility</li>
-      <li>EVMs, NOTA, Model Code of Conduct</li>
-      <li>Your rights as a citizen</li>
-    </ul>
-    <p style="margin-top:8px;">Type a question below, pick a topic from the sidebar, or try the <strong>Quiz</strong>! 🇮🇳</p>
-  `;
-        addBubble("assistant", html);
-      }
+    const FACTS = [
+      'India conducts the world\'s largest democratic elections, with over 96 crore registered voters as of 2024.',
+      'The first general election in India (1951–52) took nearly 4 months to complete.',
+      'EVMs were first used nationwide in India in the 2004 general elections.',
+      'India introduced the NOTA option in 2013 following a Supreme Court directive.',
+      'The Election Commission of India was established on January 25, 1950 — now celebrated as National Voters\' Day.',
+      'In 2009, a candidate in Rajasthan won a seat by just 1 vote — every vote truly matters!',
+      'India has the world\'s youngest electorate — millions of 18-year-olds register to vote each year.',
+      'The Model Code of Conduct comes into force the moment election dates are announced by the ECI.',
+    ];
 
-      // ─── SEARCH KNOWLEDGE BASE ────────────────────────────────────────────────────
-      function findAnswer(query) {
-        const q = query.toLowerCase();
-        // Score each entry
-        let best = null,
-          bestScore = 0;
-        for (const entry of KB) {
-          let score = 0;
-          for (const key of entry.keys) {
-            if (q.includes(key)) score += key.split(" ").length * 2;
-            else {
-              const words = key.split(" ");
-              for (const w of words)
-                if (q.includes(w) && w.length > 3) score += 1;
+    // ─── STATE ──────────────────────────────────────────────────────────────────
+    const state = {
+      quizIdx: 0,
+      quizScore: 0,
+      inQuiz: false,
+      isLoading: false,
+    };
+
+    // ─── UTILITY FUNCTIONS ──────────────────────────────────────────────────────
+    function escHtml(t) {
+      return String(t)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;');
+    }
+
+    function announceToScreenReader(msg) {
+      const region = document.getElementById('liveRegion');
+      if (region) { region.textContent = ''; setTimeout(() => { region.textContent = msg; }, 50); }
+    }
+
+    function setLoading(isLoading) {
+      state.isLoading = isLoading;
+      const btn = document.getElementById('sendBtn');
+      const input = document.getElementById('userInput');
+      if (btn) btn.disabled = isLoading;
+      if (input) input.disabled = isLoading;
+    }
+
+    // ─── KNOWLEDGE BASE SEARCH ──────────────────────────────────────────────────
+    function findAnswer(query) {
+      if (!query || typeof query !== 'string') return fallback('');
+      const q = query.toLowerCase().trim();
+      let best = null;
+      let bestScore = 0;
+
+      for (const entry of KB) {
+        let score = 0;
+        for (const key of entry.keys) {
+          if (q.includes(key)) {
+            score += key.split(' ').length * 2;
+          } else {
+            for (const word of key.split(' ')) {
+              if (word.length > 3 && q.includes(word)) score += 1;
             }
           }
-          if (score > bestScore) {
-            bestScore = score;
-            best = entry;
-          }
         }
-        if (bestScore > 0) return renderEntry(best);
-        return fallback(query);
+        if (score > bestScore) { bestScore = score; best = entry; }
       }
 
-      function renderEntry(e) {
-        let html = "";
-        if (e.title) html += `<h4>${e.title}</h4>`;
-        if (e.content) html += `<p>${e.content}</p>`;
-        if (e.points && e.points.length)
-          html += `<ul>${e.points.map((p) => `<li>${p}</li>`).join("")}</ul>`;
-        if (e.extra)
-          html += `<p style="margin-top:8px;font-size:0.82rem;color:#555;border-top:1px solid #eee;padding-top:8px;">💡 ${e.extra}</p>`;
-        return html;
-      }
+      return bestScore > 0 ? renderEntry(best) : fallback(query);
+    }
 
-      function fallback(query) {
-        const suggestions = [
-          "voter eligibility",
-          "how to register as a voter",
-          "what is nota",
-          "election commission of india",
-          "what is evm",
-          "model code of conduct",
-        ];
-        return `
-    <p>I don't have specific information on <em>"${escHtml(query)}"</em> yet, but here are some topics I can help with:</p>
-    <ul>
-      ${suggestions.map((s) => `<li><a href="#" class="link" onclick="askTopic('${s}');return false;">${s.replace(/\b\w/g, (c) => c.toUpperCase())}</a></li>`).join("")}
-    </ul>
-    <p style="margin-top:6px;font-size:0.82rem;color:#555;">For specific queries, visit <strong>eci.gov.in</strong> or call <strong>1950</strong>.</p>
-  `;
+    function renderEntry(entry) {
+      if (!entry) return '';
+      let html = '';
+      if (entry.title) html += `<h4>${escHtml(entry.title)}</h4>`;
+      if (entry.content) html += `<p>${escHtml(entry.content)}</p>`;
+      if (entry.points && entry.points.length) {
+        html += `<ul>${entry.points.map(p => `<li>${escHtml(p)}</li>`).join('')}</ul>`;
       }
-
-      // ─── CHAT ─────────────────────────────────────────────────────────────────────
-      function sendMessage() {
-        const input = document.getElementById("userInput");
-        const text = input.value.trim();
-        if (!text) return;
-        input.value = "";
-        input.style.height = "auto";
-        addBubble("user", `<p>${escHtml(text)}</p>`);
-        if (inQuiz) {
-          addBubble(
-            "assistant",
-            "<p>Please answer the quiz question by clicking one of the options above! 😊</p>",
-          );
-          return;
-        }
-        showTyping();
-        setTimeout(() => {
-          removeTyping();
-          addBubble("assistant", findAnswer(text));
-        }, 600);
+      if (entry.extra) {
+        html += `<p style="margin-top:8px;font-size:0.82rem;color:#555;border-top:1px solid #eee;padding-top:8px;">💡 ${escHtml(entry.extra)}</p>`;
       }
+      return html;
+    }
 
-      function askTopic(topic) {
-        document.getElementById("userInput").value = topic;
+    function fallback(query) {
+      const suggestions = [
+        { label:'Voter Eligibility', topic:'voter eligibility' },
+        { label:'How to Register', topic:'how to register as a voter' },
+        { label:'What is NOTA', topic:'what is nota' },
+        { label:'Election Commission', topic:'election commission of india' },
+        { label:'What is EVM', topic:'what is evm' },
+        { label:'Model Code of Conduct', topic:'model code of conduct' },
+      ];
+      const listItems = suggestions
+        .map(s => `<li><button class="link" style="background:none;border:none;cursor:pointer;color:var(--blue-mid);text-decoration:underline;font-size:0.82rem;padding:0;font-family:inherit;" onclick="askTopic('${escHtml(s.topic)}')">${escHtml(s.label)}</button></li>`)
+        .join('');
+      return `<p>I don't have specific information on <em>"${escHtml(query)}"</em> yet. Here are topics I can help with:</p><ul>${listItems}</ul><p style="margin-top:6px;font-size:0.82rem;color:#555;">For specific queries, visit <strong>eci.gov.in</strong> or call <strong>1950</strong>.</p>`;
+    }
+
+    // ─── CHAT FUNCTIONS ─────────────────────────────────────────────────────────
+    function addBubble(role, html) {
+      const win = document.getElementById('chatWindow');
+      if (!win) return;
+      const div = document.createElement('div');
+      div.className = `msg ${role}`;
+      const av = role === 'assistant' ? '🗳️' : '👤';
+      const roleLabel = role === 'assistant' ? 'VoteWise' : 'You';
+      div.innerHTML = `
+        <div class="msg-avatar" aria-hidden="true">${av}</div>
+        <div class="msg-bubble" role="region" aria-label="${roleLabel} said">${html}</div>
+      `;
+      win.appendChild(div);
+      win.scrollTop = win.scrollHeight;
+    }
+
+    function showTyping() {
+      const win = document.getElementById('chatWindow');
+      if (!win) return;
+      const div = document.createElement('div');
+      div.className = 'typing-indicator';
+      div.id = 'typing';
+      div.setAttribute('aria-label', 'VoteWise is typing');
+      div.innerHTML = `
+        <div class="msg-avatar" style="background:var(--blue);color:white;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;" aria-hidden="true">🗳️</div>
+        <div class="typing-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+      `;
+      win.appendChild(div);
+      win.scrollTop = win.scrollHeight;
+    }
+
+    function removeTyping() {
+      const t = document.getElementById('typing');
+      if (t) t.remove();
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('userInput');
+      if (!input || state.isLoading) return;
+      const text = input.value.trim();
+      if (!text) {
+        announceToScreenReader('Please type a question first.');
+        return;
+      }
+      input.value = '';
+      input.style.height = 'auto';
+      addBubble('user', `<p>${escHtml(text)}</p>`);
+      if (state.inQuiz) {
+        addBubble('assistant', '<p>Please answer the quiz question by clicking one of the options above! 😊</p>');
+        return;
+      }
+      setLoading(true);
+      showTyping();
+      setTimeout(() => {
+        removeTyping();
+        const answer = findAnswer(text);
+        addBubble('assistant', answer);
+        announceToScreenReader('VoteWise responded to your question.');
+        setLoading(false);
+      }, 600);
+    }
+
+    function askTopic(topic) {
+      const input = document.getElementById('userInput');
+      if (input) {
+        input.value = topic;
         sendMessage();
       }
+    }
 
-      function handleKey(e) {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          sendMessage();
-        }
-      }
+    function handleKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    }
 
-      function autoResize(el) {
-        el.style.height = "auto";
-        el.style.height = Math.min(el.scrollHeight, 110) + "px";
-      }
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 110) + 'px';
+    }
 
-      // ─── QUIZ ─────────────────────────────────────────────────────────────────────
-      function startQuiz() {
-        quizIdx = 0;
-        quizScore = 0;
-        inQuiz = true;
-        addBubble(
-          "assistant",
-          `<h4>🧠 Election Quiz!</h4><p>Let's test your knowledge with ${quizQuestions.length} questions. Good luck!</p>`,
-        );
-        setTimeout(showQ, 400);
-      }
+    // ─── QUIZ ────────────────────────────────────────────────────────────────────
+    function startQuiz() {
+      state.quizIdx = 0;
+      state.quizScore = 0;
+      state.inQuiz = true;
+      addBubble('assistant', `<h4>🧠 Election Quiz!</h4><p>Let's test your knowledge with ${QUIZ_QUESTIONS.length} questions. Good luck!</p>`);
+      announceToScreenReader('Quiz started. Answer the questions below.');
+      setTimeout(showQ, 400);
+    }
 
-      function showQ() {
-        if (quizIdx >= quizQuestions.length) {
-          inQuiz = false;
-          const pct = Math.round((quizScore / quizQuestions.length) * 100);
-          const msg =
-            pct >= 80
-              ? "🌟 Excellent! You're a democracy champion!"
-              : pct >= 60
-                ? "👍 Good job! Keep learning."
-                : "📚 Keep exploring — democracy needs informed citizens!";
-          addBubble(
-            "assistant",
-            `<h4>Quiz Complete! 🎉</h4><p>You scored <strong>${quizScore}/${quizQuestions.length}</strong> (${pct}%)</p><p style="margin-top:6px;">${msg}</p><p style="margin-top:8px;font-size:0.82rem;">Feel free to ask me anything else about elections!</p>`,
-          );
-          return;
-        }
-        const q = quizQuestions[quizIdx];
-        const win = document.getElementById("chatWindow");
-        const div = document.createElement("div");
-        div.className = "msg assistant";
-        div.innerHTML = `
-    <div class="msg-avatar" style="background:var(--blue);color:white;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;margin-top:2px;">🗳️</div>
-    <div class="msg-bubble">
-      <p><strong>Q${quizIdx + 1}/${quizQuestions.length}:</strong></p>
-      <div class="quiz-card">
-        <p>${q.q}</p>
-        <div class="quiz-options">${q.options.map((o, i) => `<button class="quiz-opt" onclick="answerQ(${i},this)">${o}</button>`).join("")}</div>
-      </div>
-    </div>`;
-        win.appendChild(div);
-        win.scrollTop = win.scrollHeight;
+    function showQ() {
+      if (state.quizIdx >= QUIZ_QUESTIONS.length) {
+        state.inQuiz = false;
+        const pct = Math.round((state.quizScore / QUIZ_QUESTIONS.length) * 100);
+        const msg = pct >= 80 ? '🌟 Excellent! You\'re a democracy champion!'
+          : pct >= 60 ? '👍 Good job! Keep learning.'
+          : '📚 Keep exploring — democracy needs informed citizens!';
+        addBubble('assistant', `<h4>Quiz Complete! 🎉</h4><p>You scored <strong>${state.quizScore}/${QUIZ_QUESTIONS.length}</strong> (${pct}%)</p><p style="margin-top:6px;">${msg}</p><p style="margin-top:8px;font-size:0.82rem;">Feel free to ask me anything else about elections!</p>`);
+        announceToScreenReader(`Quiz complete. You scored ${state.quizScore} out of ${QUIZ_QUESTIONS.length}.`);
+        return;
       }
+      const q = QUIZ_QUESTIONS[state.quizIdx];
+      const win = document.getElementById('chatWindow');
+      if (!win) return;
+      const div = document.createElement('div');
+      div.className = 'msg assistant';
+      const optionButtons = q.options
+        .map((o, i) => `<button class="quiz-opt" onclick="answerQ(${i},this)" aria-label="Option ${i+1}: ${escHtml(o)}">${escHtml(o)}</button>`)
+        .join('');
+      div.innerHTML = `
+        <div class="msg-avatar" style="background:var(--blue);color:white;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;margin-top:2px;" aria-hidden="true">🗳️</div>
+        <div class="msg-bubble" role="group" aria-label="Question ${state.quizIdx+1} of ${QUIZ_QUESTIONS.length}">
+          <p><strong>Q${state.quizIdx+1}/${QUIZ_QUESTIONS.length}:</strong></p>
+          <div class="quiz-card">
+            <p>${escHtml(q.q)}</p>
+            <div class="quiz-options" role="group" aria-label="Answer options">${optionButtons}</div>
+          </div>
+        </div>`;
+      win.appendChild(div);
+      win.scrollTop = win.scrollHeight;
+      announceToScreenReader(`Question ${state.quizIdx+1}: ${q.q}`);
+    }
 
-      function answerQ(idx, btn) {
-        const q = quizQuestions[quizIdx];
-        const opts = btn.closest(".quiz-options").querySelectorAll(".quiz-opt");
-        opts.forEach((o) => (o.disabled = true));
-        if (idx === q.correct) {
-          btn.classList.add("correct");
-          quizScore++;
-          addBubble(
-            "assistant",
-            `<p>✅ <strong>Correct!</strong> ${q.explanation}</p>`,
-          );
-        } else {
-          btn.classList.add("wrong");
-          opts[q.correct].classList.add("correct");
-          addBubble(
-            "assistant",
-            `<p>❌ <strong>Not quite.</strong> ${q.explanation}</p>`,
-          );
-        }
-        quizIdx++;
-        setTimeout(showQ, 1400);
+    function answerQ(idx, btn) {
+      const q = QUIZ_QUESTIONS[state.quizIdx];
+      const opts = btn.closest('.quiz-options').querySelectorAll('.quiz-opt');
+      opts.forEach(o => { o.disabled = true; o.setAttribute('aria-disabled','true'); });
+      if (idx === q.correct) {
+        btn.classList.add('correct');
+        state.quizScore++;
+        addBubble('assistant', `<p>✅ <strong>Correct!</strong> ${escHtml(q.explanation)}</p>`);
+        announceToScreenReader(`Correct! ${q.explanation}`);
+      } else {
+        btn.classList.add('wrong');
+        opts[q.correct].classList.add('correct');
+        addBubble('assistant', `<p>❌ <strong>Not quite.</strong> ${escHtml(q.explanation)}</p>`);
+        announceToScreenReader(`Incorrect. ${q.explanation}`);
       }
+      state.quizIdx++;
+      setTimeout(showQ, 1400);
+    }
 
-      // ─── HELPERS ──────────────────────────────────────────────────────────────────
-      function addBubble(role, html) {
-        const win = document.getElementById("chatWindow");
-        const div = document.createElement("div");
-        div.className = `msg ${role}`;
-        const av = role === "assistant" ? "🗳️" : "👤";
-        div.innerHTML = `<div class="msg-avatar">${av}</div><div class="msg-bubble">${html}</div>`;
-        win.appendChild(div);
-        win.scrollTop = win.scrollHeight;
+    // ─── INIT ────────────────────────────────────────────────────────────────────
+    function init() {
+      const factEl = document.getElementById('daily-fact');
+      if (factEl) {
+        factEl.textContent = FACTS[Math.floor(Math.random() * FACTS.length)];
       }
+      addBubble('assistant', `
+        <h4>Namaste! I'm VoteWise 👋</h4>
+        <p>I'm your guide to understanding India's democratic election process. Ask me anything about:</p>
+        <ul>
+          <li>How elections are conducted</li>
+          <li>Voter registration &amp; eligibility</li>
+          <li>EVMs, NOTA, Model Code of Conduct</li>
+          <li>Your rights as a citizen</li>
+        </ul>
+        <p style="margin-top:8px;">Type a question below, pick a topic from the sidebar, or try the <strong>Quiz</strong>! 🇮🇳</p>
+      `);
+    }
 
-      function showTyping() {
-        const win = document.getElementById("chatWindow");
-        const div = document.createElement("div");
-        div.className = "typing-indicator";
-        div.id = "typing";
-        div.innerHTML = `<div class="msg-avatar" style="background:var(--blue);color:white;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;">🗳️</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
-        win.appendChild(div);
-        win.scrollTop = win.scrollHeight;
+    // ─── GOOGLE TRANSLATE ────────────────────────────────────────────────────────
+    function googleTranslateInit() {
+      if (typeof google !== 'undefined' && google.translate) {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'hi,ta,te,kn,ml,bn,mr,gu,pa,or',
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false,
+        }, 'google_translate_element');
       }
+    }
 
-      function removeTyping() {
-        const t = document.getElementById("typing");
-        if (t) t.remove();
-      }
+    // ─── GOOGLE CHARTS: Voter Turnout ────────────────────────────────────────────
+    function loadVoterTurnoutChart() {
+      if (typeof google === 'undefined' || !google.charts) return;
+      google.charts.load('current', { packages: ['corechart'] });
+      google.charts.setOnLoadCallback(drawVoterChart);
+    }
 
-      function escHtml(t) {
-        return t
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
+    function drawVoterChart() {
+      const data = google.visualization.arrayToDataTable([
+        ['Year', 'Turnout %', { role: 'style' }],
+        ['1984', 64.1, 'color: #1a3a6b'],
+        ['1989', 61.9, 'color: #1a3a6b'],
+        ['1996', 57.9, 'color: #1a3a6b'],
+        ['1999', 59.7, 'color: #1a3a6b'],
+        ['2004', 58.1, 'color: #1a3a6b'],
+        ['2009', 58.2, 'color: #1a3a6b'],
+        ['2014', 66.4, 'color: #e85d04'],
+        ['2019', 67.1, 'color: #e85d04'],
+        ['2024', 65.8, 'color: #1b7a3e'],
+      ]);
+      const options = {
+        title: '',
+        backgroundColor: 'transparent',
+        chartArea: { left: 30, top: 8, width: '85%', height: '75%' },
+        legend: { position: 'none' },
+        hAxis: { textStyle: { fontSize: 9, color: '#6b6560' }, slantedText: true, slantedTextAngle: 45 },
+        vAxis: { minValue: 50, maxValue: 75, textStyle: { fontSize: 9, color: '#6b6560' }, gridlines: { color: '#ddd8cc', count: 3 } },
+        bar: { groupWidth: '65%' },
+        animation: { startup: true, duration: 800, easing: 'out' },
+      };
+      const el = document.getElementById('voterTurnoutChart');
+      if (!el) return;
+      const chart = new google.visualization.ColumnChart(el);
+      chart.draw(data, options);
+    }
+
+    // ─── AUTOMATED TESTS ─────────────────────────────────────────────────────────
+    const Tests = {
+      results: [],
+
+      assert(name, condition, detail) {
+        this.results.push({ name, pass: !!condition, detail: detail || '' });
+      },
+
+      run() {
+        this.results = [];
+
+        // Test 1: Knowledge base structure
+        this.assert('KB has entries', KB.length > 0, `Found ${KB.length} entries`);
+        this.assert('All KB entries have id', KB.every(e => e.id), 'All entries have unique ids');
+        this.assert('All KB entries have keys', KB.every(e => Array.isArray(e.keys) && e.keys.length > 0), 'All entries have keyword arrays');
+        this.assert('All KB entries have title', KB.every(e => typeof e.title === 'string' && e.title.length > 0), 'All entries have titles');
+
+        // Test 2: findAnswer function
+        const votingResult = findAnswer('how does voting work');
+        this.assert('findAnswer returns string', typeof votingResult === 'string', 'Return type is string');
+        this.assert('findAnswer finds voting topic', votingResult.includes('Voting Works'), 'Matched "How Voting Works" topic');
+
+        const notaResult = findAnswer('what is nota');
+        this.assert('findAnswer finds NOTA', notaResult.includes('NOTA'), 'Matched NOTA topic');
+
+        const evmResult = findAnswer('what is evm');
+        this.assert('findAnswer finds EVM', evmResult.includes('EVM'), 'Matched EVM topic');
+
+        // Test 3: fallback for unknown queries
+        const unknownResult = findAnswer('unknown xyz 12345');
+        this.assert('fallback handles unknown query', unknownResult.includes("don't have"), 'Fallback message shown');
+
+        // Test 4: escHtml prevents XSS
+        this.assert('escHtml escapes < >', escHtml('<script>') === '&lt;script&gt;', 'XSS characters escaped');
+        this.assert('escHtml escapes &', escHtml('a & b') === 'a &amp; b', '& escaped to &amp;');
+        this.assert('escHtml escapes quotes', escHtml('"test"') === '&quot;test&quot;', 'Quotes escaped');
+
+        // Test 5: Edge cases
+        this.assert('findAnswer handles empty string', typeof findAnswer('') === 'string', 'Empty string handled gracefully');
+        this.assert('findAnswer handles null gracefully', typeof findAnswer(null) === 'string', 'Null handled gracefully');
+
+        // Test 6: Quiz questions structure
+        this.assert('Quiz has questions', QUIZ_QUESTIONS.length > 0, `${QUIZ_QUESTIONS.length} quiz questions`);
+        this.assert('All quiz questions have correct index', QUIZ_QUESTIONS.every(q => typeof q.correct === 'number' && q.correct >= 0 && q.correct < q.options.length), 'Correct indices are valid');
+        this.assert('All quiz questions have 4 options', QUIZ_QUESTIONS.every(q => q.options.length === 4), 'All questions have 4 options');
+        this.assert('All quiz questions have explanation', QUIZ_QUESTIONS.every(q => q.explanation && q.explanation.length > 0), 'All questions have explanations');
+
+        // Test 7: State management
+        const initialState = { ...state };
+        this.assert('Initial state has quizIdx', typeof state.quizIdx === 'number', `quizIdx = ${state.quizIdx}`);
+        this.assert('Initial state has inQuiz', typeof state.inQuiz === 'boolean', `inQuiz = ${state.inQuiz}`);
+        this.assert('Initial state has isLoading', typeof state.isLoading === 'boolean', `isLoading = ${state.isLoading}`);
+
+        // Test 8: DOM elements exist
+        this.assert('chatWindow exists', !!document.getElementById('chatWindow'), 'Chat window in DOM');
+        this.assert('userInput exists', !!document.getElementById('userInput'), 'Input field in DOM');
+        this.assert('sendBtn exists', !!document.getElementById('sendBtn'), 'Send button in DOM');
+        this.assert('liveRegion exists', !!document.getElementById('liveRegion'), 'ARIA live region in DOM');
+
+        // Test 9: Accessibility checks
+        const textarea = document.getElementById('userInput');
+        this.assert('Input has aria-label', textarea && textarea.getAttribute('aria-label'), 'Input has aria-label attribute');
+        const chatWin = document.getElementById('chatWindow');
+        this.assert('Chat has role=log', chatWin && chatWin.getAttribute('role') === 'log', 'Chat window has role="log"');
+
+        // Test 10: Facts array
+        this.assert('FACTS has entries', FACTS.length > 0, `${FACTS.length} facts available`);
+        this.assert('All facts are non-empty strings', FACTS.every(f => typeof f === 'string' && f.length > 10), 'All facts are meaningful strings');
+
+        return this.results;
+      },
+
+      render(results) {
+        const pass = results.filter(r => r.pass).length;
+        const total = results.length;
+        const summary = `${pass}/${total} tests passed`;
+        const lines = results.map(r => `<div class="${r.pass ? 't-pass' : 't-fail'}">${r.pass ? '✓' : '✗'} ${r.name}${r.detail ? ' — ' + r.detail : ''}</div>`).join('');
+        return `<div style="margin-bottom:8px;font-weight:bold;color:${pass===total?'#4ec9b0':'#f48771'}">${summary}</div>${lines}`;
       }
-    </script>
-  </body>
+    };
+
+    function runTests() {
+      const panel = document.getElementById('testPanel');
+      const output = document.getElementById('testOutput');
+      const btn = document.getElementById('runTestsBtn');
+      if (!panel || !output) return;
+      const results = Tests.run();
+      output.innerHTML = Tests.render(results);
+      panel.style.display = 'block';
+      if (btn) btn.style.display = 'none';
+      panel.setAttribute('aria-hidden', 'false');
+      const pass = results.filter(r => r.pass).length;
+      announceToScreenReader(`Tests complete. ${pass} of ${results.length} passed.`);
+    }
+
+    // Close test panel on click outside
+    document.addEventListener('click', function(e) {
+      const panel = document.getElementById('testPanel');
+      const btn = document.getElementById('runTestsBtn');
+      if (panel && panel.style.display === 'block' && !panel.contains(e.target) && e.target !== btn) {
+        panel.style.display = 'none';
+        if (btn) btn.style.display = 'block';
+      }
+    });
+
+    // ─── BOOTSTRAP ───────────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', function() {
+      init();
+      loadVoterTurnoutChart();
+    });
+  </script>
+</body>
 </html>
